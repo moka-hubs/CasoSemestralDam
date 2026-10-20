@@ -1,8 +1,7 @@
 package com.example.rackstracker.repository
 
+import com.example.rackstracker.local.AppDao
 import com.example.rackstracker.model.Usuario
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 interface AuthRepository {
     suspend fun login(correo: String, contrasena: String): Result<Usuario>
@@ -14,12 +13,13 @@ interface AuthRepository {
         contrasena: String
     ): Result<Usuario>
     suspend fun recuperarContrasena(correo: String): Result<Unit>
-    fun actualizarUsuario(correoOriginal: String, usuario: Usuario)
+    suspend fun actualizarUsuario(correoOriginal: String, usuario: Usuario)
+    suspend fun buscarPorCorreo(correo: String): Usuario?
 }
 
-object FakeAuthRepository : AuthRepository {
-
-    private val usuarios = MutableStateFlow(Usuario.DEMO)
+class RoomAuthRepository(
+    private val dao: AppDao
+) : AuthRepository {
 
     override suspend fun login(correo: String, contrasena: String): Result<Usuario> {
         if (correo.isBlank() || contrasena.isBlank()) {
@@ -28,10 +28,8 @@ object FakeAuthRepository : AuthRepository {
         if (!correo.contains("@")) {
             return Result.failure(IllegalArgumentException("Correo electrónico no válido"))
         }
-        val usuario = usuarios.value.firstOrNull {
-            it.correo.equals(correo, ignoreCase = true) && it.contrasena == contrasena
-        }
-        return if (usuario != null) {
+        val usuario = dao.buscarUsuario(correo.trim().lowercase())
+        return if (usuario != null && usuario.contrasena == contrasena) {
             Result.success(usuario)
         } else {
             Result.failure(IllegalArgumentException("Correo o contraseña incorrectos"))
@@ -57,7 +55,7 @@ object FakeAuthRepository : AuthRepository {
             return Result.failure(IllegalArgumentException("La contraseña debe tener al menos 8 caracteres"))
         }
         val correoLimpio = correo.trim().lowercase()
-        if (usuarios.value.any { it.correo.equals(correoLimpio, ignoreCase = true) }) {
+        if (dao.buscarUsuario(correoLimpio) != null) {
             return Result.failure(IllegalArgumentException("Ya existe una cuenta con ese correo"))
         }
         val nuevo = Usuario(
@@ -67,7 +65,7 @@ object FakeAuthRepository : AuthRepository {
             correo = correoLimpio,
             contrasena = contrasena
         )
-        usuarios.update { it + nuevo }
+        dao.insertarUsuario(nuevo)
         return Result.success(nuevo)
     }
 
@@ -78,9 +76,13 @@ object FakeAuthRepository : AuthRepository {
         return Result.success(Unit)
     }
 
-    override fun actualizarUsuario(correoOriginal: String, usuario: Usuario) {
-        usuarios.update { lista ->
-            lista.map { if (it.correo.equals(correoOriginal, ignoreCase = true)) usuario else it }
+    override suspend fun actualizarUsuario(correoOriginal: String, usuario: Usuario) {
+        if (!correoOriginal.equals(usuario.correo, ignoreCase = true)) {
+            dao.eliminarUsuario(correoOriginal)
         }
+        dao.insertarUsuario(usuario)
     }
+
+    override suspend fun buscarPorCorreo(correo: String): Usuario? =
+        dao.buscarUsuario(correo)
 }
