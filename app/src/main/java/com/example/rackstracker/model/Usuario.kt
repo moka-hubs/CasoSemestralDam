@@ -1,7 +1,7 @@
 package com.example.rackstracker.model
 
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 
 enum class RolUsuario(val label: String) {
