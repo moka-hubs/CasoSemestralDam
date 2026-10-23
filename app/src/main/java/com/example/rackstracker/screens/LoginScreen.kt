@@ -79,6 +79,7 @@ fun LoginScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        viewModel.consumirLoginExitoso()
                         navController.navigate(Routes.RACKS) {
                             popUpTo(Routes.LOGIN) { inclusive = true }
                         }

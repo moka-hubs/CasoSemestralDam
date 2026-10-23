@@ -1,7 +1,11 @@
 package com.example.rackstracker.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -48,6 +52,30 @@ fun Navegacion(
     navController: NavHostController = rememberNavController()
 ) {
     val usuario by SessionManager.usuario.collectAsStateWithLifecycle()
+    var habiaSesion by remember { mutableStateOf(usuario != null) }
+
+    LaunchedEffect(usuario) {
+        val actual = navController.currentDestination?.route
+        val rutasSinSesion = setOf(Routes.LOGIN, Routes.CREAR_CUENTA, Routes.RECUPERAR)
+        if (usuario == null) {
+            if (habiaSesion) {
+                loginViewModel.reiniciarEstado()
+            }
+            if (actual != null && actual !in rutasSinSesion) {
+                navController.navigate(Routes.LOGIN) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        } else if (actual == Routes.LOGIN && !loginViewModel.uiState.value.loginExitoso) {
+            navController.navigate(Routes.RACKS) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+        habiaSesion = usuario != null
+    }
+
     val inicio = if (usuario != null) Routes.RACKS else Routes.LOGIN
     NavHost(navController = navController, startDestination = inicio) {
 

@@ -49,6 +49,7 @@ fun RegisterScreen(
 
     LaunchedEffect(state.registroExitoso) {
         if (state.registroExitoso) {
+            viewModel.consumirRegistro()
             navController.navigate(Routes.RACKS) {
                 popUpTo(Routes.LOGIN) { inclusive = true }
             }

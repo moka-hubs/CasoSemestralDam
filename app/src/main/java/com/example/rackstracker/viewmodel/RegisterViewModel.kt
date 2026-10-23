@@ -41,6 +41,10 @@ class RegisterViewModel(
     fun toggleContrasenaVisibilidad() =
         _uiState.update { it.copy(contrasenaVisible = !it.contrasenaVisible) }
 
+    fun consumirRegistro() {
+        _uiState.value = RegisterUiState()
+    }
+
     fun crearCuenta() {
         val s = _uiState.value
         viewModelScope.launch {

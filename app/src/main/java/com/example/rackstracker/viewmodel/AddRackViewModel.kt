@@ -50,6 +50,10 @@ class AddRackViewModel(
     fun onImagenChange(uri: String?) = _uiState.update { it.copy(imagenUri = uri) }
     fun quitarImagen() = _uiState.update { it.copy(imagenUri = null) }
 
+    fun consumirGuardado() {
+        _uiState.value = AddRackUiState()
+    }
+
     fun registrar() {
         val s = _uiState.value
         if (!s.formularioValido) return

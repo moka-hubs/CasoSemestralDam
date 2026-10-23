@@ -47,7 +47,6 @@ import com.example.rackstracker.ui.theme.SurfaceElevated
 import com.example.rackstracker.ui.theme.TextMuted
 import com.example.rackstracker.ui.theme.TextPrimary
 import com.example.rackstracker.ui.theme.TextSecondary
-import com.example.rackstracker.navigation.Routes
 import com.example.rackstracker.viewmodel.ProfileViewModel
 import androidx.navigation.NavController
 
@@ -68,9 +67,6 @@ fun ProfileScreen(
                 TextButton(onClick = {
                     confirmarSalida = false
                     viewModel.cerrarSesion()
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
                 }) {
                     Text("Cerrar sesión", color = Mint, fontWeight = FontWeight.SemiBold)
                 }

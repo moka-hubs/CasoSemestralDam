@@ -37,6 +37,24 @@ class LoginViewModel(
     fun toggleContrasenaVisibilidad() =
         _uiState.update { it.copy(contrasenaVisible = !it.contrasenaVisible) }
 
+    fun consumirLoginExitoso() {
+        _uiState.update { it.copy(loginExitoso = false, usuario = null) }
+    }
+
+    fun reiniciarEstado() {
+        _uiState.update {
+            it.copy(
+                correo = "",
+                contrasena = "",
+                contrasenaVisible = false,
+                cargando = false,
+                error = null,
+                loginExitoso = false,
+                usuario = null
+            )
+        }
+    }
+
     fun iniciarSesion() {
         val state = _uiState.value
         viewModelScope.launch {

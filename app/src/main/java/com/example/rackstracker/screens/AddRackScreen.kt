@@ -122,7 +122,10 @@ fun AddRackScreen(
     }
 
     LaunchedEffect(state.guardado) {
-        if (state.guardado) navController.popBackStack()
+        if (state.guardado) {
+            viewModel.consumirGuardado()
+            navController.popBackStack()
+        }
     }
 
     Column(
