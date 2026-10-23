@@ -5,65 +5,77 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import com.example.rackstracker.ui.theme.Purple80
-import com.example.rackstracker.ui.theme.RacksTrackerTheme
+import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
+import com.example.rackstracker.local.AppDatabase
+import com.example.rackstracker.local.DatabaseSeeder
+import com.example.rackstracker.repository.RoomAuthRepository
+import com.example.rackstracker.repository.RoomRackRepository
+import com.example.rackstracker.session.SessionManager
+import com.example.rackstracker.navigation.Navegacion
+import com.example.rackstracker.ui.theme.EjemploTheme
+import com.example.rackstracker.viewmodel.AddRackViewModel
+import com.example.rackstracker.viewmodel.LoginViewModel
+import com.example.rackstracker.viewmodel.ProfileViewModel
+import com.example.rackstracker.viewmodel.RackDetailViewModel
+import com.example.rackstracker.viewmodel.RacksViewModel
+import com.example.rackstracker.viewmodel.RecoveryViewModel
+import com.example.rackstracker.viewmodel.RegisterViewModel
+import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
+
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "racks_tracker_db"
+        ).build()
+    }
+
+    private val authRepository by lazy { RoomAuthRepository(db.appDao()) }
+    private val rackRepository by lazy { RoomRackRepository(db.appDao()) }
+
+    private val loginViewModel by lazy { LoginViewModel(authRepository) }
+    private val recoveryViewModel by lazy { RecoveryViewModel(authRepository) }
+    private val registerViewModel by lazy { RegisterViewModel(authRepository) }
+    private val profileViewModel by lazy { ProfileViewModel(authRepository) }
+    private val racksViewModel by lazy { RacksViewModel(rackRepository) }
+    private val addRackViewModel by lazy { AddRackViewModel(rackRepository) }
+    private val rackDetailViewModel by lazy { RackDetailViewModel(rackRepository) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SessionManager.attach(db.appDao(), authRepository)
+        lifecycleScope.launch {
+            DatabaseSeeder.sembrarSiEsNecesario(db)
+            SessionManager.restaurar()
+        }
         enableEdgeToEdge()
         setContent {
-            RacksTrackerTheme {
-                val nombre = "Moka"
-                var numero by remember { mutableIntStateOf(0) }
-                fun aumentar (){
-                    numero++
-                }
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+            EjemploTheme {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Hola Soy $nombre",
-                            modifier = Modifier.background(color = Color.Yellow)
-
-                        )
-                        Text(
-                            text = "Hola Dahyun",
-                            modifier = Modifier.background(color = Color.Blue)
-
-                        )
-                        Text(
-                            text = "Como estas $nombre?",
-                            modifier = Modifier.background(color = Color.Yellow)
-                        )
-                        Text(
-                            text = "Bien 🆗",
-                            modifier = Modifier.background(color = Purple80)
-                        )
-                        Button(onClick = {}) {
-                            Text(text = "Seleccionar")
-                        }
-
-                    }
+                    Navegacion(
+                        loginViewModel = loginViewModel,
+                        recoveryViewModel = recoveryViewModel,
+                        registerViewModel = registerViewModel,
+                        racksViewModel = racksViewModel,
+                        profileViewModel = profileViewModel,
+                        addRackViewModel = addRackViewModel,
+                        rackDetailViewModel = rackDetailViewModel
+                    )
                 }
             }
         }
     }
 }
-
