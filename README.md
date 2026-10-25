@@ -49,9 +49,9 @@ Se utiliza **MVVM (Model - View - ViewModel)** con las siguientes capas:
 4. Ejecutar en emulador o dispositivo físico
 
 ## Integrantes
-- [Marcelo Dervis
+- Marcelo Dervis
 - Joaquin Fuenzalida
-- Paulo Riveros ]
+- Paulo Riveros
 
 ## Fecha
 Octubre 2026
