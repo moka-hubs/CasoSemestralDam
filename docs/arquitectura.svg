@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760" viewBox="0 0 900 760" role="img" aria-labelledby="arqTitle arqDesc">
+  <title id="arqTitle">Arquitectura MVVM de Racks Tracker</title>
+  <desc id="arqDesc">Diagrama de capas: Screens y ViewModels en presentación; Repositories y SessionManager en datos; AppDao y Room SQLite en persistencia.</desc>
+
+  <defs>
+    <marker id="arqArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#60E8C0"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="760" rx="20" fill="#0B1116"/>
+  <rect x="0.5" y="0.5" width="899" height="759" rx="19.5" fill="none" stroke="#1F3038"/>
+
+  <text x="48" y="56" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#E8F0F8">Arquitectura MVVM</text>
+  <text x="48" y="82" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13.5" fill="#98A8B8">Flujo unidireccional de datos en la aplicación</text>
+
+  <text x="48" y="130" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#60E8C0">PRESENTACIÓN</text>
+
+  <rect x="250" y="150" width="400" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="252" y="158" width="3" height="48" rx="1.5" fill="#60E8C0" opacity="0.85"/>
+  <text x="276" y="181" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">Screens</text>
+  <text x="276" y="201" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">Jetpack Compose · pantallas de la app</text>
+
+  <rect x="250" y="260" width="400" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="252" y="268" width="3" height="48" rx="1.5" fill="#60E8C0" opacity="0.85"/>
+  <text x="276" y="291" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">ViewModels</text>
+  <text x="276" y="311" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">StateFlow · estado y validaciones</text>
+
+  <line x1="450" y1="214" x2="450" y2="252" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <text x="462" y="238" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">eventos de UI</text>
+
+  <text x="48" y="364" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#60E8C0">DATOS</text>
+
+  <rect x="100" y="380" width="320" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="102" y="388" width="3" height="48" rx="1.5" fill="#2A8C73"/>
+  <text x="124" y="411" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">Repositories</text>
+  <text x="124" y="431" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">AuthRepository · RackRepository</text>
+
+  <rect x="480" y="380" width="320" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="482" y="388" width="3" height="48" rx="1.5" fill="#2A8C73"/>
+  <text x="504" y="411" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">SessionManager</text>
+  <text x="504" y="431" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">usuario y sesión activa</text>
+
+  <path d="M420 324 C420 352 260 352 260 372" fill="none" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <path d="M480 324 C480 352 640 352 640 372" fill="none" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <text x="312" y="346" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">datos</text>
+  <text x="562" y="346" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">sesión</text>
+
+  <text x="48" y="494" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#60E8C0">PERSISTENCIA</text>
+
+  <rect x="250" y="510" width="400" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="252" y="518" width="3" height="48" rx="1.5" fill="#94A3B8"/>
+  <text x="276" y="541" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">AppDao</text>
+  <text x="276" y="561" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">consultas SQL y Flow observables</text>
+
+  <rect x="250" y="630" width="400" height="64" rx="14" fill="#0E141B" stroke="#1F3038"/>
+  <rect x="252" y="638" width="3" height="48" rx="1.5" fill="#94A3B8"/>
+  <text x="276" y="661" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#E8F0F8">Room · SQLite</text>
+  <text x="276" y="681" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#98A8B8">base de datos racks_tracker_db</text>
+
+  <path d="M260 444 C260 478 390 478 390 502" fill="none" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <path d="M640 444 C640 478 510 478 510 502" fill="none" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <text x="304" y="470" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">consultas</text>
+  <text x="544" y="470" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">persistencia</text>
+
+  <line x1="450" y1="574" x2="450" y2="622" stroke="#60E8C0" stroke-opacity="0.65" stroke-width="1.6" marker-end="url(#arqArrow)"/>
+  <text x="462" y="604" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#607080">datos locales</text>
+
+  <text x="48" y="736" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" fill="#607080">La UI nunca accede a Room directamente: observa el estado y delega las acciones en los repositorios.</text>
+</svg>

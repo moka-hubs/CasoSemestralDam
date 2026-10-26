@@ -113,26 +113,9 @@ entre ejecuciones y protege las acciones sensibles mediante un sistema de roles.
 El proyecto sigue el patrón **MVVM (Model – View – ViewModel)** con una capa de repositorios,
 flujo de datos unidireccional y `StateFlow` como única fuente de verdad para la UI.
 
-```mermaid
-flowchart TB
-    subgraph UI["Presentación"]
-        S["Screens · Jetpack Compose"]
-        VM["ViewModels · StateFlow"]
-    end
-    subgraph DATA["Datos"]
-        REPO["Repositories"]
-        DAO["AppDao"]
-    end
-    SES["SessionManager"]
-    DB[("Room · SQLite")]
-
-    S --> VM
-    VM --> REPO
-    VM --> SES
-    REPO --> DAO
-    SES --> DAO
-    DAO --> DB
-```
+<p align="center">
+  <img src="docs/arquitectura.svg" width="820" alt="Diagrama de la arquitectura MVVM: Screens y ViewModels, Repositories y SessionManager, AppDao y Room" />
+</p>
 
 | Capa | Paquete | Responsabilidad |
 | :--- | :--- | :--- |
@@ -158,6 +141,7 @@ CasoSemestralDam/
 │   ├── session/                     # SessionManager
 │   ├── ui/theme/                    # Colores, tipografía y tema
 │   └── viewmodel/                   # Un ViewModel por pantalla
+├── docs/                            # Diagramas SVG de arquitectura y navegación
 ├── gradle/libs.versions.toml        # Catálogo de dependencias y versiones
 ├── build.gradle.kts
 └── settings.gradle.kts
@@ -173,16 +157,9 @@ CasoSemestralDam/
 
 ### Flujo de navegación
 
-```mermaid
-flowchart LR
-    L[Login] --> R[Racks]
-    L --> C[Crear cuenta]
-    L --> P[Recuperar contraseña]
-    R --> A[Agregar rack]
-    R --> D[Detalle del rack]
-    R --> U[Perfil]
-    U --> L
-```
+<p align="center">
+  <img src="docs/navegacion.svg" width="860" alt="Flujo de navegación: Login, Racks, Detalle, Agregar rack, Perfil, Crear cuenta y Recuperar contraseña" />
+</p>
 
 ---
 
