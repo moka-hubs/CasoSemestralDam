@@ -1,4 +1,4 @@
-package com.example.rackstracker.navigation
+package com.example.rackstracker.viewmodel.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,13 +14,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import com.example.rackstracker.session.SessionManager
-import com.example.rackstracker.screens.AddRackScreen
-import com.example.rackstracker.screens.LoginScreen
-import com.example.rackstracker.screens.ProfileScreen
-import com.example.rackstracker.screens.RackDetailScreen
-import com.example.rackstracker.screens.RacksScreen
-import com.example.rackstracker.screens.RecoveryScreen
-import com.example.rackstracker.screens.RegisterScreen
+import com.example.rackstracker.ui.screens.AddRackScreen
+import com.example.rackstracker.ui.screens.LoginScreen
+import com.example.rackstracker.ui.screens.ProfileScreen
+import com.example.rackstracker.ui.screens.RackDetailScreen
+import com.example.rackstracker.ui.screens.RacksScreen
+import com.example.rackstracker.ui.screens.RecoveryScreen
+import com.example.rackstracker.ui.screens.RegisterScreen
 import com.example.rackstracker.viewmodel.AddRackViewModel
 import com.example.rackstracker.viewmodel.LoginViewModel
 import com.example.rackstracker.viewmodel.ProfileViewModel

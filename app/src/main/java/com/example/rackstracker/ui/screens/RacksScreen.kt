@@ -1,4 +1,4 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +34,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +51,7 @@ import com.example.rackstracker.ui.theme.SurfaceElevated
 import com.example.rackstracker.ui.theme.TextMuted
 import com.example.rackstracker.ui.theme.TextPrimary
 import com.example.rackstracker.ui.theme.TextSecondary
-import com.example.rackstracker.navigation.Routes
+import com.example.rackstracker.viewmodel.navigation.Routes
 import com.example.rackstracker.viewmodel.RackFiltro
 import com.example.rackstracker.viewmodel.RacksViewModel
 import java.text.SimpleDateFormat
@@ -127,7 +129,7 @@ fun RacksScreen(
                     else "No hay racks registrados.",
                     color = TextMuted,
                     fontSize = 14.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
@@ -209,14 +211,14 @@ private fun FilterTabs(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(9.dp))
-                    .background(if (activo) Mint else androidx.compose.ui.graphics.Color.Transparent)
+                    .background(if (activo) Mint else Color.Transparent)
                     .clickable { onSelect(filtro) }
                     .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = filtro.label,
-                    color = if (activo) androidx.compose.ui.graphics.Color(0xFF08100C) else TextSecondary,
+                    color = if (activo) Color(0xFF08100C) else TextSecondary,
                     fontSize = 13.sp,
                     fontWeight = if (activo) FontWeight.SemiBold else FontWeight.Normal
                 )

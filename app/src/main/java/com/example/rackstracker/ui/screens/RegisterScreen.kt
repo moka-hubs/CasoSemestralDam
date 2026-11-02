@@ -1,4 +1,4 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,7 @@ import com.example.rackstracker.components.RacksTopBar
 import com.example.rackstracker.ui.theme.TextMuted
 import com.example.rackstracker.ui.theme.TextPrimary
 import com.example.rackstracker.ui.theme.TextSecondary
-import com.example.rackstracker.navigation.Routes
+import com.example.rackstracker.viewmodel.navigation.Routes
 import com.example.rackstracker.viewmodel.RegisterViewModel
 import androidx.navigation.NavController
 

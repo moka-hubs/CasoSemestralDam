@@ -1,4 +1,4 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

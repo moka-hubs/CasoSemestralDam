@@ -1,4 +1,4 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager

@@ -1,4 +1,4 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,5 +1,6 @@
-package com.example.rackstracker.screens
+package com.example.rackstracker.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +48,7 @@ import com.example.rackstracker.ui.theme.Mint
 import com.example.rackstracker.ui.theme.SurfaceElevated
 import com.example.rackstracker.ui.theme.TextMuted
 import com.example.rackstracker.ui.theme.TextPrimary
-import com.example.rackstracker.navigation.Routes
+import com.example.rackstracker.viewmodel.navigation.Routes
 import com.example.rackstracker.ui.theme.TextSecondary
 import com.example.rackstracker.viewmodel.LoginViewModel
 
@@ -106,7 +107,7 @@ fun LoginScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(Modifier.height(32.dp))
-            androidx.compose.foundation.Image(
+            Image(
                 painter = painterResource(id = R.drawable.ic_logo),
                 contentDescription = "Logo de Racks Tracker",
                 modifier = Modifier

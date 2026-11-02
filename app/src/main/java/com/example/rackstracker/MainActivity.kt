@@ -18,7 +18,7 @@ import com.example.rackstracker.local.DatabaseSeeder
 import com.example.rackstracker.repository.RoomAuthRepository
 import com.example.rackstracker.repository.RoomRackRepository
 import com.example.rackstracker.session.SessionManager
-import com.example.rackstracker.navigation.Navegacion
+import com.example.rackstracker.viewmodel.navigation.Navegacion
 import com.example.rackstracker.ui.theme.EjemploTheme
 import com.example.rackstracker.viewmodel.AddRackViewModel
 import com.example.rackstracker.viewmodel.LoginViewModel
