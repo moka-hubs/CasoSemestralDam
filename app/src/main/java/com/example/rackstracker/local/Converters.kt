@@ -2,6 +2,7 @@ package com.example.rackstracker.local
 import androidx.room.TypeConverter
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.model.RolUsuario
+import com.example.rackstracker.model.TipoEventoRack
 
 
 class Converters {
@@ -18,4 +19,11 @@ class Converters {
     @TypeConverter
     fun stringAEstado(valor: String): RackStatus =
         runCatching { RackStatus.valueOf(valor) }.getOrDefault(RackStatus.ACTIVO)
+
+    @TypeConverter
+    fun tipoEventoAString(tipo: TipoEventoRack): String = tipo.name
+
+    @TypeConverter
+    fun stringATipoEvento(valor: String): TipoEventoRack =
+        runCatching { TipoEventoRack.valueOf(valor) }.getOrDefault(TipoEventoRack.ACTUALIZACION)
 }

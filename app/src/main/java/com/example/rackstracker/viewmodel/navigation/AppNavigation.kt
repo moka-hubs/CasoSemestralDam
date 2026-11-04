@@ -18,6 +18,7 @@ import com.example.rackstracker.ui.screens.AddRackScreen
 import com.example.rackstracker.ui.screens.LoginScreen
 import com.example.rackstracker.ui.screens.ProfileScreen
 import com.example.rackstracker.ui.screens.RackDetailScreen
+import com.example.rackstracker.ui.screens.RackHistoryScreen
 import com.example.rackstracker.ui.screens.RacksScreen
 import com.example.rackstracker.ui.screens.RecoveryScreen
 import com.example.rackstracker.ui.screens.RegisterScreen
@@ -25,6 +26,7 @@ import com.example.rackstracker.viewmodel.AddRackViewModel
 import com.example.rackstracker.viewmodel.LoginViewModel
 import com.example.rackstracker.viewmodel.ProfileViewModel
 import com.example.rackstracker.viewmodel.RackDetailViewModel
+import com.example.rackstracker.viewmodel.RackHistoryViewModel
 import com.example.rackstracker.viewmodel.RacksViewModel
 import com.example.rackstracker.viewmodel.RecoveryViewModel
 import com.example.rackstracker.viewmodel.RegisterViewModel
@@ -38,6 +40,8 @@ object Routes {
     const val AGREGAR_RACK = "agregar_rack"
     const val DETALLE_RACK = "detalle_rack/{rackId}"
     fun detalleRack(id: Int) = "detalle_rack/$id"
+    const val HISTORIAL_RACK = "historial_rack/{rackId}"
+    fun historialRack(id: Int) = "historial_rack/$id"
 }
 
 @Composable
@@ -49,6 +53,7 @@ fun Navegacion(
     profileViewModel: ProfileViewModel,
     addRackViewModel: AddRackViewModel,
     rackDetailViewModel: RackDetailViewModel,
+    rackHistoryViewModel: RackHistoryViewModel,
     navController: NavHostController = rememberNavController()
 ) {
     val usuario by SessionManager.usuario.collectAsStateWithLifecycle()
@@ -97,6 +102,14 @@ fun Navegacion(
         ) { backStackEntry ->
             val rackId = backStackEntry.arguments?.getInt("rackId") ?: 0
             RackDetailScreen(navController, rackId, rackDetailViewModel)
+        }
+
+        composable(
+            route = Routes.HISTORIAL_RACK,
+            arguments = listOf(navArgument("rackId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val rackId = backStackEntry.arguments?.getInt("rackId") ?: 0
+            RackHistoryScreen(navController, rackId, rackHistoryViewModel)
         }
     }
 }

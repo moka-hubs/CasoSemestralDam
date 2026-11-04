@@ -36,6 +36,7 @@ import com.example.rackstracker.model.Racks
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.components.BackLink
 import com.example.rackstracker.components.PrimaryButton
+import com.example.rackstracker.components.SecondaryButton
 import com.example.rackstracker.components.SectionLabel
 import com.example.rackstracker.components.StatusChip
 import com.example.rackstracker.ui.theme.CardBorder
@@ -45,6 +46,7 @@ import com.example.rackstracker.ui.theme.TextMuted
 import com.example.rackstracker.ui.theme.TextPrimary
 import com.example.rackstracker.ui.theme.TextSecondary
 import com.example.rackstracker.viewmodel.RackDetailViewModel
+import com.example.rackstracker.viewmodel.navigation.Routes
 import androidx.navigation.NavController
 
 @Composable
@@ -91,6 +93,12 @@ fun RackDetailScreen(
 
             Spacer(Modifier.height(24.dp))
             RackSummaryCard(rack)
+
+            Spacer(Modifier.height(16.dp))
+            SecondaryButton(
+                text = "Ver historial del rack",
+                onClick = { navController.navigate(Routes.historialRack(rack.id)) }
+            )
 
             Spacer(Modifier.height(28.dp))
             Text("Estado del rack", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)

@@ -1,7 +1,9 @@
 package com.example.rackstracker.local
+import com.example.rackstracker.model.RackHistorial
 import com.example.rackstracker.model.RackStatus
-import com.example.rackstracker.model.Usuario
 import com.example.rackstracker.model.Racks
+import com.example.rackstracker.model.TipoEventoRack
+import com.example.rackstracker.model.Usuario
 
 object DatabaseSeeder {
 
@@ -14,8 +16,50 @@ object DatabaseSeeder {
         if (dao.contarUsuarios() == 0) {
             dao.insertarUsuarios(Usuario.DEMO)
         }
-        if (dao.contarRacks() == 0) {
+        val baseNueva = dao.contarRacks() == 0
+        if (baseNueva) {
             dao.insertarRacks(racksIniciales())
+        }
+        sembrarHistorial(dao, baseNueva)
+    }
+
+    private suspend fun sembrarHistorial(dao: AppDao, baseNueva: Boolean) {
+        val ahora = System.currentTimeMillis()
+        val racks = dao.obtenerTodosRacks()
+        val eventos = mutableListOf<RackHistorial>()
+
+        racks.forEachIndexed { indice, rack ->
+            if (dao.contarHistorialRack(rack.id) > 0) return@forEachIndexed
+
+            val fechaRegistro = if (baseNueva) {
+                ahora - (racks.size - indice) * 86_400_000L
+            } else {
+                ahora
+            }
+            eventos += RackHistorial(
+                rackId = rack.id,
+                tipo = TipoEventoRack.CREACION,
+                descripcion = "Rack registrado en el sistema",
+                estadoNuevo = if (baseNueva) RackStatus.ACTIVO else rack.estado,
+                usuarioCorreo = rack.creadoPor,
+                fecha = fechaRegistro
+            )
+
+            if (baseNueva && rack.estado != RackStatus.ACTIVO) {
+                eventos += RackHistorial(
+                    rackId = rack.id,
+                    tipo = TipoEventoRack.CAMBIO_ESTADO,
+                    descripcion = "Estado actualizado de ${RackStatus.ACTIVO.label} a ${rack.estado.label}",
+                    estadoAnterior = RackStatus.ACTIVO,
+                    estadoNuevo = rack.estado,
+                    usuarioCorreo = rack.creadoPor,
+                    fecha = fechaRegistro + 6 * 3_600_000L
+                )
+            }
+        }
+
+        if (eventos.isNotEmpty()) {
+            dao.insertarHistorial(eventos)
         }
     }
 

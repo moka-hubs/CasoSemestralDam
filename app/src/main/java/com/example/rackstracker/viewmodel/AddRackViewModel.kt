@@ -2,8 +2,10 @@ package com.example.rackstracker.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rackstracker.model.RackHistorial
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.model.Racks
+import com.example.rackstracker.model.TipoEventoRack
 import com.example.rackstracker.repository.RackRepository
 import com.example.rackstracker.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +60,7 @@ class AddRackViewModel(
         val s = _uiState.value
         if (!s.formularioValido) return
         viewModelScope.launch {
-            repository.addRack(
+            val id = repository.addRack(
                 Racks(
                     nombre = s.nombre.trim(),
                     codigo = s.codigo.trim().uppercase(),
@@ -74,6 +76,17 @@ class AddRackViewModel(
                     imagenUri = s.imagenUri
                 )
             )
+            if (id > 0) {
+                repository.addHistorial(
+                    RackHistorial(
+                        rackId = id.toInt(),
+                        tipo = TipoEventoRack.CREACION,
+                        descripcion = "Rack registrado en el sistema",
+                        estadoNuevo = s.estado,
+                        usuarioCorreo = SessionManager.correoActual ?: ""
+                    )
+                )
+            }
             _uiState.update { it.copy(guardado = true) }
         }
     }

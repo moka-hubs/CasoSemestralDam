@@ -2,8 +2,10 @@ package com.example.rackstracker.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rackstracker.model.RackHistorial
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.model.Racks
+import com.example.rackstracker.model.TipoEventoRack
 import com.example.rackstracker.repository.RackRepository
 import com.example.rackstracker.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,10 +67,22 @@ class RackDetailViewModel(
 
     fun guardarCambios() {
         val s = _uiState.value
-        val  id = s.rack?.id ?: return
+        val rack = s.rack ?: return
         if (!s.puedeEditar) return
         viewModelScope.launch {
-            repository.updateStatus(id, s.estadoSeleccionado)
+            repository.updateStatus(rack.id, s.estadoSeleccionado)
+            if (rack.estado != s.estadoSeleccionado) {
+                repository.addHistorial(
+                    RackHistorial(
+                        rackId = rack.id,
+                        tipo = TipoEventoRack.CAMBIO_ESTADO,
+                        descripcion = "Estado actualizado de ${rack.estado.label} a ${s.estadoSeleccionado.label}",
+                        estadoAnterior = rack.estado,
+                        estadoNuevo = s.estadoSeleccionado,
+                        usuarioCorreo = SessionManager.correoActual ?: ""
+                    )
+                )
+            }
             _uiState.update { it.copy(guardado = true) }
         }
     }

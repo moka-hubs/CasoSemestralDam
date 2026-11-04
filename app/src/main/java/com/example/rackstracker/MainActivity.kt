@@ -24,6 +24,7 @@ import com.example.rackstracker.viewmodel.AddRackViewModel
 import com.example.rackstracker.viewmodel.LoginViewModel
 import com.example.rackstracker.viewmodel.ProfileViewModel
 import com.example.rackstracker.viewmodel.RackDetailViewModel
+import com.example.rackstracker.viewmodel.RackHistoryViewModel
 import com.example.rackstracker.viewmodel.RacksViewModel
 import com.example.rackstracker.viewmodel.RecoveryViewModel
 import com.example.rackstracker.viewmodel.RegisterViewModel
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java,
             "racks_tracker_db"
-        ).build()
+        ).addMigrations(AppDatabase.MIGRACION_1_2).build()
     }
 
     private val authRepository by lazy { RoomAuthRepository(db.appDao()) }
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
     private val racksViewModel by lazy { RacksViewModel(rackRepository) }
     private val addRackViewModel by lazy { AddRackViewModel(rackRepository) }
     private val rackDetailViewModel by lazy { RackDetailViewModel(rackRepository) }
+    private val rackHistoryViewModel by lazy { RackHistoryViewModel(rackRepository) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +78,8 @@ class MainActivity : ComponentActivity() {
                         racksViewModel = racksViewModel,
                         profileViewModel = profileViewModel,
                         addRackViewModel = addRackViewModel,
-                        rackDetailViewModel = rackDetailViewModel
+                        rackDetailViewModel = rackDetailViewModel,
+                        rackHistoryViewModel = rackHistoryViewModel
                     )
                 }
             }

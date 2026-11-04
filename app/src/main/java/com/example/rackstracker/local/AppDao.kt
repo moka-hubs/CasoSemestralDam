@@ -7,6 +7,7 @@ import androidx.room.Update
 
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.model.Racks
+import com.example.rackstracker.model.RackHistorial
 import com.example.rackstracker.model.Usuario
 import kotlinx.coroutines.flow.Flow
 
@@ -21,6 +22,9 @@ interface AppDao {
     @Query("SELECT * FROM racks WHERE id = :id LIMIT 1")
     suspend fun obtenerRack(id: Int): Racks?
 
+    @Query("SELECT * FROM racks ORDER BY id ASC")
+    suspend fun obtenerTodosRacks(): List<Racks>
+
     @Query("SELECT COUNT(*) FROM racks")
     suspend fun contarRacks(): Int
 
@@ -32,6 +36,20 @@ interface AppDao {
 
     @Query("UPDATE racks SET estado = :estado WHERE id = :id")
     suspend fun actualizarEstadoRack(id: Int, estado: RackStatus)
+
+    // ----- Historial de racks -----
+
+    @Query("SELECT * FROM historial_racks WHERE rackId = :rackId ORDER BY fecha DESC, id DESC")
+    fun observarHistorial(rackId: Int): Flow<List<RackHistorial>>
+
+    @Query("SELECT COUNT(*) FROM historial_racks WHERE rackId = :rackId")
+    suspend fun contarHistorialRack(rackId: Int): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarHistorial(evento: RackHistorial)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarHistorial(eventos: List<RackHistorial>)
 
     // ----- Usuarios -----
 
