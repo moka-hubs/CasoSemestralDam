@@ -11,11 +11,16 @@ object DatabaseSeeder {
     private const val CORREO_ANA = "ana@racks.com"
     private const val CORREO_CARLOS = "carlos@racks.com"
 
-    suspend fun sembrarSiEsNecesario(database: AppDatabase) {
+    suspend fun sembrarSiEsNecesario(
+        database: AppDatabase,
+        sembrarRacks: Boolean = true
+    ) {
         val dao = database.appDao()
         if (dao.contarUsuarios() == 0) {
             dao.insertarUsuarios(Usuario.DEMO)
         }
+        if (!sembrarRacks) return
+
         val baseNueva = dao.contarRacks() == 0
         if (baseNueva) {
             dao.insertarRacks(racksIniciales())

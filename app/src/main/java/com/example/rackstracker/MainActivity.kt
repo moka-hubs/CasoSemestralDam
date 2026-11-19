@@ -20,6 +20,7 @@ import com.example.rackstracker.local.DatabaseSeeder
 import com.example.rackstracker.repository.RoomAuthRepository
 import com.example.rackstracker.repository.RoomRackRepository
 import com.example.rackstracker.repository.XanoAuthRepository
+import com.example.rackstracker.repository.XanoRackRepository
 import com.example.rackstracker.session.SessionManager
 import com.example.rackstracker.viewmodel.navigation.Navegacion
 import com.example.rackstracker.ui.theme.EjemploTheme
@@ -47,7 +48,9 @@ class MainActivity : ComponentActivity() {
     private val authRepository by lazy {
         XanoAuthRepository(local = RoomAuthRepository(db.appDao()))
     }
-    private val rackRepository by lazy { RoomRackRepository(db.appDao()) }
+    private val rackRepository by lazy {
+        XanoRackRepository(local = RoomRackRepository(db.appDao()))
+    }
 
     private val loginViewModel by lazy { LoginViewModel(authRepository) }
     private val recoveryViewModel by lazy { RecoveryViewModel(authRepository) }
@@ -63,7 +66,7 @@ class MainActivity : ComponentActivity() {
         TokenStore.attach(this)
         SessionManager.attach(db.appDao(), RetrofitInstance.api)
         lifecycleScope.launch {
-            DatabaseSeeder.sembrarSiEsNecesario(db)
+            DatabaseSeeder.sembrarSiEsNecesario(db, sembrarRacks = false)
             SessionManager.restaurar()
         }
         enableEdgeToEdge()

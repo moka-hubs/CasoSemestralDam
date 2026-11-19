@@ -118,6 +118,29 @@ fun RacksScreen(
         )
 
         Spacer(Modifier.height(16.dp))
+        if (state.cargando) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(50)),
+                color = Mint,
+                trackColor = CardBorder
+            )
+            Spacer(Modifier.height(10.dp))
+        }
+        if (state.error != null) {
+            Text(
+                text = "${state.error} · Toca para reintentar",
+                color = TextMuted,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.cargarRacks() }
+                    .padding(vertical = 6.dp)
+            )
+        }
         if (state.racks.isEmpty()) {
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
