@@ -13,10 +13,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import com.example.rackstracker.data.remote.RetrofitInstance
+import com.example.rackstracker.data.remote.TokenStore
 import com.example.rackstracker.local.AppDatabase
 import com.example.rackstracker.local.DatabaseSeeder
 import com.example.rackstracker.repository.RoomAuthRepository
 import com.example.rackstracker.repository.RoomRackRepository
+import com.example.rackstracker.repository.XanoAuthRepository
 import com.example.rackstracker.session.SessionManager
 import com.example.rackstracker.viewmodel.navigation.Navegacion
 import com.example.rackstracker.ui.theme.EjemploTheme
@@ -41,7 +44,9 @@ class MainActivity : ComponentActivity() {
         ).addMigrations(AppDatabase.MIGRACION_1_2).build()
     }
 
-    private val authRepository by lazy { RoomAuthRepository(db.appDao()) }
+    private val authRepository by lazy {
+        XanoAuthRepository(local = RoomAuthRepository(db.appDao()))
+    }
     private val rackRepository by lazy { RoomRackRepository(db.appDao()) }
 
     private val loginViewModel by lazy { LoginViewModel(authRepository) }
@@ -55,7 +60,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SessionManager.attach(db.appDao(), authRepository)
+        TokenStore.attach(this)
+        SessionManager.attach(db.appDao(), RetrofitInstance.api)
         lifecycleScope.launch {
             DatabaseSeeder.sembrarSiEsNecesario(db)
             SessionManager.restaurar()

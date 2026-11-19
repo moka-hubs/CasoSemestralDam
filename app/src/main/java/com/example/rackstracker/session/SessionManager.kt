@@ -1,9 +1,11 @@
 package com.example.rackstracker.session
 
+import com.example.rackstracker.data.remote.ApiService
+import com.example.rackstracker.data.remote.TokenStore
+import com.example.rackstracker.data.remote.aDominio
 import com.example.rackstracker.local.AppDao
 import com.example.rackstracker.local.SesionEntity
 import com.example.rackstracker.model.Usuario
-import com.example.rackstracker.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 object SessionManager {
 
     private var dao: AppDao? = null
-    private var authRepository: AuthRepository? = null
+    private var api: ApiService? = null
 
     private val _usuario = MutableStateFlow<Usuario?>(null)
     val usuario: StateFlow<Usuario?> = _usuario.asStateFlow()
@@ -22,18 +24,35 @@ object SessionManager {
     val esAdmin: Boolean
         get() = _usuario.value?.esAdmin == true
 
-    fun attach(appDao: AppDao, auth: AuthRepository) {
+    fun attach(appDao: AppDao, apiService: ApiService) {
         dao = appDao
-        authRepository = auth
+        api = apiService
     }
 
     /**
-     * Restaura la sesión guardada en Room. Debe llamarse una sola vez al iniciar la app.
+     * Restaura la sesión. Sin token no hay sesión válida: se limpia también
+     * la sesión local antigua para no dejar un usuario "fantasma".
      */
     suspend fun restaurar() {
-        val guardada = dao?.obtenerSesion() ?: return
-        val usuario = authRepository?.buscarPorCorreo(guardada.correo) ?: return
-        _usuario.value = usuario
+        val token = TokenStore.token
+        if (token.isNullOrBlank()) {
+            dao?.limpiarSesion()
+            return
+        }
+
+        val remoto = try {
+            api?.me()?.aDominio()
+        } catch (e: Exception) {
+            null
+        }
+
+        if (remoto == null) {
+            cerrarSesion()
+            return
+        }
+
+        _usuario.value = remoto
+        dao?.guardarSesion(SesionEntity(correo = remoto.correo))
     }
 
     suspend fun iniciarSesion(usuario: Usuario) {
@@ -43,6 +62,7 @@ object SessionManager {
 
     suspend fun cerrarSesion() {
         _usuario.value = null
+        TokenStore.limpiar()
         dao?.limpiarSesion()
     }
 }
