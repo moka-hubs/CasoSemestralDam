@@ -13,6 +13,12 @@ interface RackRepository {
     suspend fun updateStatus(id: Int, status: RackStatus)
     fun historial(rackId: Int): Flow<List<RackHistorial>>
     suspend fun addHistorial(evento: RackHistorial)
+
+    /** Sincroniza los racks desde Xano a la caché local. */
+    suspend fun refreshRacks(): Result<Unit> = Result.success(Unit)
+
+    /** Reemplaza por completo la caché local de racks. */
+    suspend fun reemplazarRacks(racks: List<Racks>) = Unit
 }
 
 class RoomRackRepository(
@@ -34,5 +40,9 @@ class RoomRackRepository(
 
     override suspend fun addHistorial(evento: RackHistorial) {
         dao.insertarHistorial(evento)
+    }
+
+    override suspend fun reemplazarRacks(racks: List<Racks>) {
+        dao.reemplazarRacks(racks)
     }
 }

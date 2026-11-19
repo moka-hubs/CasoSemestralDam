@@ -3,6 +3,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 
 import com.example.rackstracker.model.RackStatus
@@ -36,6 +37,15 @@ interface AppDao {
 
     @Query("UPDATE racks SET estado = :estado WHERE id = :id")
     suspend fun actualizarEstadoRack(id: Int, estado: RackStatus)
+
+    @Transaction
+    suspend fun reemplazarRacks(racks: List<Racks>) {
+        borrarRacks()
+        insertarRacks(racks)
+    }
+
+    @Query("DELETE FROM racks")
+    suspend fun borrarRacks()
 
     // ----- Historial de racks -----
 
