@@ -35,6 +35,7 @@ class RackHistoryViewModel(
         trabajo = viewModelScope.launch {
             _uiState.value = RackHistoryUiState(cargando = true)
             _uiState.update { it.copy(rack = repository.getRack(id)) }
+            repository.refreshHistorial(id)
             repository.historial(id).collect { eventos ->
                 _uiState.update { it.copy(eventos = eventos, cargando = false) }
             }
