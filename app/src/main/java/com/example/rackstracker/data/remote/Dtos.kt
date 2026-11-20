@@ -59,7 +59,7 @@ data class RackDto(
     @SerializedName("ocupadas_u") val ocupadasU: Int = 0,
     val equipos: Int = 0,
     val estado: String = "ACTIVO",
-    @SerializedName("creado_por") val creadoPor: String? = null,
+    @SerializedName("creador_por") val creadoPor: String? = null,
     val notas: String? = null,
     @SerializedName("imagen_url") val imagenUrl: String? = null,
     @SerializedName("created_at") val createdAt: Long? = null
@@ -91,6 +91,7 @@ data class RackCreateRequest(
     @SerializedName("ocupadas_u") val ocupadasU: Int = 0,
     val equipos: Int = 0,
     val estado: String = "ACTIVO",
+    @SerializedName("creador_por") val creadorPor: String? = null,
     val notas: String = "",
     @SerializedName("imagen_url") val imagenUrl: String? = null
 )
@@ -104,8 +105,7 @@ data class EstadoRequest(
 data class HistorialDto(
     val id: Int = 0,
     @SerializedName("rack_id") val rackId: Int = 0,
-    @SerializedName("rack_codigo") val rackCodigo: String? = null,
-    @SerializedName("rack_nombre") val rackNombre: String? = null,
+    @SerializedName("rack_codigo") val rackCodigo: Int? = null,
     val tipo: String = "ACTUALIZACION",
     val descripcion: String = "",
     @SerializedName("estado_anterior") val estadoAnterior: String? = null,
@@ -122,7 +122,7 @@ fun HistorialDto.aDominio(): RackHistorial = RackHistorial(
     estadoAnterior = estadoAnterior?.let(::estadoApi),
     estadoNuevo = estadoNuevo?.let(::estadoApi),
     usuarioCorreo = usuarioCorreo.orEmpty(),
-    fecha = (createdAt ?: 0L) * 1000
+    fecha = createdAt ?: 0L
 )
 
 private fun estadoApi(valor: String?): RackStatus = when (valor?.uppercase()?.trim()) {

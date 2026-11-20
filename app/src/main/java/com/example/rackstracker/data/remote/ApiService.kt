@@ -39,6 +39,6 @@ interface ApiService {
 
     // ----- Historial -----
 
-    @GET("historial")
+    @GET("historial_racks")
     suspend fun historial(@Query("rack_id") rackId: Int): List<HistorialDto>
 }
