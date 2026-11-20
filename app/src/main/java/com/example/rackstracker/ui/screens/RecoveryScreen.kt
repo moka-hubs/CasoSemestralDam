@@ -68,7 +68,7 @@ fun RecoveryScreen(
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Introduce el correo asociado a tu cuenta. Te enviaremos una clave temporal para volver a acceder a tus racks.",
+                text = "Introduce el correo asociado a tu cuenta. Te confirmaremos que se envió un mensaje.",
                 color = TextSecondary,
                 fontSize = 15.sp,
                 lineHeight = 22.sp
@@ -93,7 +93,7 @@ fun RecoveryScreen(
             if (state.enviado) {
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Te enviamos una clave temporal a tu correo.",
+                    "Mensaje enviado.",
                     color = Mint,
                     fontSize = 13.sp
                 )
@@ -101,8 +101,8 @@ fun RecoveryScreen(
 
             Spacer(Modifier.height(28.dp))
             PrimaryButton(
-                text = if (state.cargando) "Enviando…" else "Enviar clave temporal al correo",
-                onClick = viewModel::enviarClave,
+                text = if (state.cargando) "Enviando…" else "Enviar mensaje",
+                onClick = viewModel::enviarMensaje,
                 enabled = !state.cargando
             )
 

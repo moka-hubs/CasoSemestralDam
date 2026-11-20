@@ -52,7 +52,7 @@ el servidor al abrir la app, y las acciones sensibles se protegen con un sistema
 - Inicio de sesión con validación de correo y contraseña.
 - Registro de usuarios con validaciones: campos obligatorios, correo válido, contraseña de
   al menos 8 caracteres y correo no duplicado.
-- Recuperación de contraseña a través de `POST /auth/recuperar-contrasenia` en Xano.
+- Recuperación de contraseña: envía la solicitud a `POST /auth/recuperar-contrasenia` en Xano y confirma que se envió un mensaje.
 - Sesión persistente mediante token en `SharedPreferences`, validada con `GET /auth/me`.
 - Cierre de sesión con diálogo de confirmación.
 - Perfil editable (nombre, apellido y correo).

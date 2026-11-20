@@ -25,7 +25,7 @@ class RecoveryViewModel(
 
     fun onCorreoChange(v: String) = _uiState.update { it.copy(correo = v, error = null) }
 
-    fun enviarClave() {
+    fun enviarMensaje() {
         val correo = _uiState.value.correo.trim()
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, error = null) }
