@@ -12,13 +12,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.example.rackstracker.data.remote.RetrofitInstance
 import com.example.rackstracker.data.remote.TokenStore
-import com.example.rackstracker.local.AppDatabase
-import com.example.rackstracker.local.DatabaseSeeder
-import com.example.rackstracker.repository.RoomAuthRepository
-import com.example.rackstracker.repository.RoomRackRepository
+import com.example.rackstracker.repository.InMemoryRackRepository
 import com.example.rackstracker.repository.XanoAuthRepository
 import com.example.rackstracker.repository.XanoRackRepository
 import com.example.rackstracker.session.SessionManager
@@ -34,22 +30,11 @@ import com.example.rackstracker.viewmodel.RecoveryViewModel
 import com.example.rackstracker.viewmodel.RegisterViewModel
 import kotlinx.coroutines.launch
 
-
 class MainActivity : ComponentActivity() {
 
-    private val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "racks_tracker_db"
-        ).addMigrations(AppDatabase.MIGRACION_1_2).build()
-    }
-
-    private val authRepository by lazy {
-        XanoAuthRepository(local = RoomAuthRepository(db.appDao()))
-    }
+    private val authRepository by lazy { XanoAuthRepository() }
     private val rackRepository by lazy {
-        XanoRackRepository(local = RoomRackRepository(db.appDao()))
+        XanoRackRepository(local = InMemoryRackRepository())
     }
 
     private val loginViewModel by lazy { LoginViewModel(authRepository) }
@@ -64,9 +49,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TokenStore.attach(this)
-        SessionManager.attach(db.appDao(), RetrofitInstance.api)
+        SessionManager.attach(RetrofitInstance.api)
         lifecycleScope.launch {
-            DatabaseSeeder.sembrarSiEsNecesario(db, sembrarRacks = false)
             SessionManager.restaurar()
         }
         enableEdgeToEdge()

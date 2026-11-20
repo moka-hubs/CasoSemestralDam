@@ -5,18 +5,16 @@ import com.example.rackstracker.data.remote.LoginRequest
 import com.example.rackstracker.data.remote.RegistroRequest
 import com.example.rackstracker.data.remote.RetrofitInstance
 import com.example.rackstracker.data.remote.TokenStore
+import com.example.rackstracker.data.remote.UsuarioUpdateRequest
 import com.example.rackstracker.data.remote.aDominio
+import com.example.rackstracker.model.RolUsuario
 import com.example.rackstracker.model.Usuario
 import retrofit2.HttpException
 import java.io.IOException
 
-/**
- * Autenticación contra Xano. Las operaciones que aún no tienen endpoint remoto
- * se delegan al repositorio local para no romper las pantallas existentes.
- */
+/** Autenticación y perfil contra Xano, sin base de datos local. */
 class XanoAuthRepository(
-    private val api: ApiService = RetrofitInstance.api,
-    private val local: AuthRepository
+    private val api: ApiService = RetrofitInstance.api
 ) : AuthRepository {
 
     override suspend fun login(correo: String, contrasena: String): Result<Usuario> {
@@ -28,9 +26,7 @@ class XanoAuthRepository(
         }
 
         return try {
-            val respuesta = api.login(
-                LoginRequest(correo.trim().lowercase(), contrasena)
-            )
+            val respuesta = api.login(LoginRequest(correo.trim().lowercase(), contrasena))
             guardarSesion(respuesta.authToken)
             Result.success(api.me().aDominio())
         } catch (e: Exception) {
@@ -83,10 +79,48 @@ class XanoAuthRepository(
         TokenStore.token = token
     }
 
+    override suspend fun actualizarUsuario(
+        correoOriginal: String,
+        usuario: Usuario
+    ): Result<Unit> = try {
+        val id = api.me().id
+        api.actualizarUsuario(
+            id = id,
+            body = UsuarioUpdateRequest(
+                email = usuario.correo.trim().lowercase(),
+                nombre = usuario.nombre.trim(),
+                apellido = usuario.apellido.trim(),
+                rut = usuario.rut.trim(),
+                rol = if (usuario.rol == RolUsuario.ADMIN) "ADMIN" else "USUARIO"
+            )
+        )
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(Exception(mensajeError(e), e))
+    }
+
+    override suspend fun buscarPorCorreo(correo: String): Usuario? = try {
+        api.getUsuarios()
+            .firstOrNull { it.email.equals(correo.trim(), ignoreCase = true) }
+            ?.aDominio()
+    } catch (e: Exception) {
+        null
+    }
+
+    override suspend fun recuperarContrasena(correo: String): Result<Unit> {
+        if (!correo.contains("@")) {
+            return Result.failure(IllegalArgumentException("Correo electrónico no válido"))
+        }
+        // TODO: conectar el endpoint de recuperación que se cree en Xano.
+        return Result.failure(
+            IllegalStateException("La recuperación de contraseña aún no está disponible en el servidor.")
+        )
+    }
+
     private fun mensajeError(e: Exception): String = when (e) {
         is HttpException -> when (e.code()) {
             400 -> "Revisa los datos ingresados."
-            401 -> "Correo o contraseña incorrectos."
+            401 -> "Tu sesión expiró. Vuelve a iniciar sesión."
             409 -> "Ya existe una cuenta con ese correo."
             in 500..599 -> "El servidor no está disponible."
             else -> "Error del servidor (${e.code()})."
@@ -94,13 +128,4 @@ class XanoAuthRepository(
         is IOException -> "Sin conexión. Revisa tu red e inténtalo de nuevo."
         else -> e.message ?: "No se pudo completar la operación."
     }
-
-    override suspend fun recuperarContrasena(correo: String): Result<Unit> =
-        local.recuperarContrasena(correo)
-
-    override suspend fun actualizarUsuario(correoOriginal: String, usuario: Usuario) =
-        local.actualizarUsuario(correoOriginal, usuario)
-
-    override suspend fun buscarPorCorreo(correo: String): Usuario? =
-        local.buscarPorCorreo(correo)
 }

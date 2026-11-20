@@ -81,9 +81,14 @@ class ProfileViewModel(
         )
         viewModelScope.launch {
             authRepository.actualizarUsuario(correoOriginal, actualizado)
-            SessionManager.iniciarSesion(actualizado)
-            correoOriginal = actualizado.correo
-            _uiState.update { buildState(actualizado).copy(guardado = true) }
+                .onSuccess {
+                    SessionManager.iniciarSesion(actualizado)
+                    correoOriginal = actualizado.correo
+                    _uiState.update { buildState(actualizado).copy(guardado = true, error = null) }
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(error = e.message ?: "No se pudo actualizar el perfil.") }
+                }
         }
     }
 

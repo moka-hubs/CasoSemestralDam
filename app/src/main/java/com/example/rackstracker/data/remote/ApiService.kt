@@ -19,6 +19,17 @@ interface ApiService {
     @GET("auth/me")
     suspend fun me(): UsuarioDto
 
+    // ----- Usuarios -----
+
+    @GET("usuarios")
+    suspend fun getUsuarios(): List<UsuarioDto>
+
+    @PATCH("usuarios/{id}")
+    suspend fun actualizarUsuario(
+        @Path("id") id: Int,
+        @Body body: UsuarioUpdateRequest
+    ): UsuarioDto
+
     // ----- Racks -----
 
     @GET("rack")

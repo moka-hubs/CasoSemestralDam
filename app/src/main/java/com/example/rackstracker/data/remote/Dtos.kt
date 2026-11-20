@@ -46,6 +46,14 @@ fun UsuarioDto.aDominio(): Usuario = Usuario(
     rol = if (rol.equals("ADMIN", ignoreCase = true)) RolUsuario.ADMIN else RolUsuario.USUARIO
 )
 
+data class UsuarioUpdateRequest(
+    val email: String,
+    val nombre: String,
+    val apellido: String,
+    val rut: String,
+    val rol: String
+)
+
 // ----- Racks -----
 
 data class RackDto(

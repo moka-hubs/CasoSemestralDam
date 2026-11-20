@@ -1,18 +1,14 @@
 package com.example.rackstracker.model
 
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 enum class RackStatus(val label: String) {
     ACTIVO("Activo"),
     INACTIVO("Inactivo"),
     MANTENIMIENTO("En mantenimiento")
 }
 
-@Entity(tableName = "racks")
 data class Racks(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val id: Int = 0,
     val nombre: String,
     val codigo: String,
     val sede: String,

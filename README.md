@@ -11,7 +11,8 @@ por **sede**, **sala** y **estado**, con acceso diferenciado para **administrado
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
-![Room](https://img.shields.io/badge/Room-2.8.5-3DDC84?style=for-the-badge)
+![Retrofit](https://img.shields.io/badge/Retrofit-2.9.0-3DDC84?style=for-the-badge)
+![Xano](https://img.shields.io/badge/Xano-API_REST-2E7D32?style=for-the-badge)
 ![MVVM](https://img.shields.io/badge/Arquitectura-MVVM-FF6F00?style=for-the-badge)
 ![Android](https://img.shields.io/badge/Android-API_24+-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 
@@ -27,8 +28,9 @@ por **sede**, **sala** y **estado**, con acceso diferenciado para **administrado
 permite conocer su ubicación, capacidad, nivel de ocupación y estado operativo, además de
 asignar cada rack al usuario que lo registra.
 
-La aplicación funciona **100 % en local** sobre **Room (SQLite)**, mantiene la sesión del usuario
-entre ejecuciones y protege las acciones sensibles mediante un sistema de roles.
+La aplicación consume una **API REST en Xano** a través de **Retrofit**. Xano es la única fuente
+de verdad: no hay base de datos local. La sesión se conserva mediante un token y se valida contra
+el servidor al abrir la app, y las acciones sensibles se protegen con un sistema de roles.
 
 <!--
   ¿Tienes capturas de pantalla? Guárdalas en docs/screenshots y descomenta este bloque.
@@ -50,8 +52,8 @@ entre ejecuciones y protege las acciones sensibles mediante un sistema de roles.
 - Inicio de sesión con validación de correo y contraseña.
 - Registro de usuarios con validaciones: campos obligatorios, correo válido, contraseña de
   al menos 8 caracteres y correo no duplicado.
-- Recuperación de contraseña con validación del correo ingresado (flujo de demostración).
-- Sesión persistente en Room: la app recuerda al usuario al reiniciarse.
+- Recuperación de contraseña (pendiente de conectar el endpoint en Xano).
+- Sesión persistente mediante token en `SharedPreferences`, validada con `GET /auth/me`.
 - Cierre de sesión con diálogo de confirmación.
 - Perfil editable (nombre, apellido y correo).
 
@@ -85,8 +87,8 @@ entre ejecuciones y protege las acciones sensibles mediante un sistema de roles.
 | Editar el perfil propio | ✅ | ✅ |
 
 > [!IMPORTANT]
-> Las credenciales de prueba son datos de demostración. La base de datos local se siembra
-> automáticamente la primera vez que se inicia la aplicación.
+> Las credenciales de prueba corresponden a usuarios creados en Xano. No hay datos precargados
+> en el dispositivo: todos los racks y su historial provienen del servidor.
 
 ---
 
@@ -99,8 +101,9 @@ entre ejecuciones y protege las acciones sensibles mediante un sistema de roles.
 | [Material 3](https://m3.material.io/) | — | Sistema de diseño y componentes |
 | [Navigation Compose](https://developer.android.com/jetpack/compose/navigation) | 2.8.5 | Navegación entre pantallas |
 | [ViewModel + StateFlow](https://developer.android.com/topic/libraries/architecture/viewmodel) | 2.8.7 | Estado y lógica de presentación |
-| [Room](https://developer.android.com/training/data-storage/room) | 2.8.5 | Persistencia local (SQLite) |
-| [KSP](https://github.com/google/ksp) | 2.3.6 | Procesamiento de anotaciones de Room |
+| [Retrofit](https://square.github.io/retrofit/) | 2.9.0 | Cliente HTTP contra la API de Xano |
+| [Gson](https://github.com/google/gson) | 2.9.0 | Serialización de los DTOs |
+| Xano | — | Backend: autenticación, racks e historial |
 | [Coil](https://coil-kt.github.io/coil/compose/) | 2.6.0 | Carga de imágenes |
 | [Android Gradle Plugin](https://developer.android.com/build) | 9.2.1 | Compilación y empaquetado |
 
@@ -114,15 +117,15 @@ El proyecto sigue el patrón **MVVM (Model – View – ViewModel)** con una cap
 flujo de datos unidireccional y `StateFlow` como única fuente de verdad para la UI.
 
 <p align="center">
-  <img src="docs/arquitectura.svg" width="820" alt="Diagrama de la arquitectura MVVM: Screens y ViewModels, Repositories y SessionManager, AppDao y Room" />
+  <img src="docs/arquitectura.svg" width="820" alt="Diagrama de la arquitectura MVVM: Screens y ViewModels, Repositories y SessionManager, Retrofit y Xano" />
 </p>
 
 | Capa | Paquete | Responsabilidad |
 | :--- | :--- | :--- |
 | Interfaz | `screens`, `components`, `ui.theme` | Pantallas Compose, componentes reutilizables y tema visual |
 | Presentación | `viewmodel` | Estado de la UI, validaciones y coordinación de acciones |
-| Datos | `repository` | Contratos e implementaciones de acceso a datos |
-| Persistencia | `local` | Entidades Room, DAO, conversores y datos iniciales |
+| Datos | `repository` | Contratos e implementaciones de acceso a datos (Xano + caché en memoria) |
+| Remoto | `data.remote` | Retrofit, DTOs, interceptor de token y `TokenStore` |
 | Modelo | `model` | Entidades de dominio (`Racks`, `Usuario`) |
 | Sesión | `session` | Usuario autenticado y restauración de sesión |
 
@@ -133,10 +136,10 @@ CasoSemestralDam/
 ├── app/src/main/java/com/example/rackstracker/
 │   ├── MainActivity.kt              # Punto de entrada e inyección de dependencias
 │   ├── components/                  # Botones, campos, chips y barras reutilizables
-│   ├── local/                       # AppDatabase, AppDao, Converters, SesionEntity, DatabaseSeeder
+│   ├── data/remote/                 # ApiService, DTOs, RetrofitInstance, TokenStore, interceptor
 │   ├── model/                       # Racks, RackStatus, Usuario, RolUsuario
 │   ├── navigation/                  # Navegación y definición de rutas
-│   ├── repository/                  # AuthRepository y RackRepository
+│   ├── repository/                  # Repositorios Xano + caché en memoria
 │   ├── screens/                     # Login, Registro, Recuperación, Racks, Detalle, Agregar, Perfil
 │   ├── session/                     # SessionManager
 │   ├── ui/theme/                    # Colores, tipografía y tema
@@ -151,9 +154,9 @@ CasoSemestralDam/
 
 | Entidad | Campos principales | Clave |
 | :--- | :--- | :--- |
-| `Racks` | Nombre, código, sede, sala, posición, capacidad U, U ocupadas, equipos, estado, notas e imagen | `id` autogenerado |
-| `Usuario` | Nombre, apellido, RUT, correo, contraseña y rol | `correo` |
-| `SesionEntity` | Correo del usuario con sesión activa | `id` único |
+| `Racks` | Nombre, código, sede, sala, posición, capacidad U, U ocupadas, equipos, estado, notas e imagen | `id` asignado por Xano |
+| `Usuario` | Nombre, apellido, RUT, correo y rol | `id` asignado por Xano |
+| `RackHistorial` | Rack, tipo, descripción, estados, correo y fecha | `id` asignado por Xano |
 
 ### Flujo de navegación
 
@@ -220,12 +223,12 @@ Para instalar directamente en un dispositivo conectado:
 ## 📌 Notas del proyecto
 
 > [!NOTE]
-> **Alcance académico.** La información se almacena únicamente en el dispositivo, sin backend
-> ni sincronización remota. La recuperación de contraseña es un flujo de demostración y la
-> autenticación está pensada para un entorno de pruebas, no para producción.
+> **Alcance académico.** El backend es una instancia de Xano. La sesión se restaura con el token
+> guardado y se confirma con `GET /auth/me`. La recuperación de contraseña queda pendiente de su
+> endpoint en Xano. No usar credenciales reales en producción.
 
-- La base de datos se crea como `racks_tracker_db` e incluye usuarios y racks de ejemplo.
-- La sesión se restaura automáticamente al abrir la app si existe un usuario guardado.
+- No hay SQLite: los racks y el historial viven en Xano y se mantienen en caché en memoria mientras la app está abierta.
+- Al cerrar la app se descarta la caché; al volver a abrirla se vuelven a descargar los datos.
 - Un rack nuevo se registra sin equipos; su ocupación se calcula a partir de la capacidad y las U ocupadas.
 
 ---

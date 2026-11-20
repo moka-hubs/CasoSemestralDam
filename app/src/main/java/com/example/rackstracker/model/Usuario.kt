@@ -1,20 +1,15 @@
 package com.example.rackstracker.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-
 enum class RolUsuario(val label: String) {
     ADMIN("Administrador"),
     USUARIO("Usuario")
 }
 
-@Entity(tableName = "usuarios")
 data class Usuario(
     val nombre: String,
     val apellido: String,
     val rut: String,
-    @PrimaryKey val correo: String,
+    val correo: String,
     val contrasena: String,
     val rol: RolUsuario = RolUsuario.USUARIO
 ) {

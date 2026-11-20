@@ -1,10 +1,14 @@
 package com.example.rackstracker.repository
 
-import com.example.rackstracker.local.AppDao
 import com.example.rackstracker.model.RackHistorial
 import com.example.rackstracker.model.RackStatus
 import com.example.rackstracker.model.Racks
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 interface RackRepository {
     val racks: Flow<List<Racks>>
@@ -14,44 +18,63 @@ interface RackRepository {
     fun historial(rackId: Int): Flow<List<RackHistorial>>
     suspend fun addHistorial(evento: RackHistorial): Result<Unit>
 
-    /** Sincroniza los racks desde Xano a la caché local. */
+    /** Sincroniza los racks desde Xano a la caché en memoria. */
     suspend fun refreshRacks(): Result<Unit> = Result.success(Unit)
 
-    /** Reemplaza por completo la caché local de racks. */
+    /** Reemplaza por completo la caché en memoria de racks. */
     suspend fun reemplazarRacks(racks: List<Racks>) = Unit
 
-    /** Sincroniza el historial de un rack desde Xano a la caché local. */
+    /** Sincroniza el historial de un rack desde Xano a la caché en memoria. */
     suspend fun refreshHistorial(rackId: Int): Result<Unit> = Result.success(Unit)
 
-    /** Reemplaza el historial local de un rack. */
+    /** Reemplaza el historial en memoria de un rack. */
     suspend fun reemplazarHistorial(rackId: Int, eventos: List<RackHistorial>) = Unit
 }
 
-class RoomRackRepository(
-    private val dao: AppDao
-) : RackRepository {
+/**
+ * Caché en memoria: mantiene la reactividad de la interfaz sin base de datos local.
+ * Xano es la única fuente de verdad; estos datos se descartan al cerrar la app.
+ */
+class InMemoryRackRepository : RackRepository {
 
-    override val racks: Flow<List<Racks>> = dao.observarRacks()
+    private val _racks = MutableStateFlow<List<Racks>>(emptyList())
+    override val racks: StateFlow<List<Racks>> = _racks.asStateFlow()
 
-    override suspend fun getRack(id: Int): Racks? = dao.obtenerRack(id)
+    private val _historial = MutableStateFlow<Map<Int, List<RackHistorial>>>(emptyMap())
 
-    override suspend fun addRack(rack: Racks): Result<Long> =
-        Result.success(dao.insertarRack(rack))
+    override suspend fun getRack(id: Int): Racks? = _racks.value.firstOrNull { it.id == id }
 
-    override suspend fun updateStatus(id: Int, status: RackStatus): Result<Unit> =
-        runCatching { dao.actualizarEstadoRack(id, status) }
+    override suspend fun addRack(rack: Racks): Result<Long> = runCatching {
+        _racks.update { actual ->
+            (actual.filterNot { it.id == rack.id } + rack).sortedBy { it.codigo }
+        }
+        rack.id.toLong()
+    }
+
+    override suspend fun updateStatus(id: Int, status: RackStatus): Result<Unit> = runCatching {
+        _racks.update { actual ->
+            actual.map { if (it.id == id) it.copy(estado = status) else it }
+        }
+    }
 
     override fun historial(rackId: Int): Flow<List<RackHistorial>> =
-        dao.observarHistorial(rackId)
+        _historial.map { map ->
+            map[rackId].orEmpty().sortedWith(
+                compareByDescending<RackHistorial> { it.fecha }.thenByDescending { it.id }
+            )
+        }
 
-    override suspend fun addHistorial(evento: RackHistorial): Result<Unit> =
-        runCatching { dao.insertarHistorial(evento) }
+    override suspend fun addHistorial(evento: RackHistorial): Result<Unit> = runCatching {
+        _historial.update { map ->
+            map + (evento.rackId to (map[evento.rackId].orEmpty() + evento))
+        }
+    }
 
     override suspend fun reemplazarRacks(racks: List<Racks>) {
-        dao.reemplazarRacks(racks)
+        _racks.value = racks.sortedBy { it.codigo }
     }
 
     override suspend fun reemplazarHistorial(rackId: Int, eventos: List<RackHistorial>) {
-        dao.reemplazarHistorial(rackId, eventos)
+        _historial.update { it + (rackId to eventos) }
     }
 }
