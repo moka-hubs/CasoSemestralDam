@@ -54,6 +54,10 @@ data class UsuarioUpdateRequest(
     val rol: String
 )
 
+data class RecuperarContrasenaRequest(
+    val email: String
+)
+
 // ----- Racks -----
 
 data class RackDto(

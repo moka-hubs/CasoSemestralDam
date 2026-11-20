@@ -19,6 +19,9 @@ interface ApiService {
     @GET("auth/me")
     suspend fun me(): UsuarioDto
 
+    @POST("auth/recuperar-contrasenia")
+    suspend fun recuperarContrasena(@Body body: RecuperarContrasenaRequest): String?
+
     // ----- Usuarios -----
 
     @GET("usuarios")

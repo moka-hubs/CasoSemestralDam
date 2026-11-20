@@ -52,7 +52,7 @@ el servidor al abrir la app, y las acciones sensibles se protegen con un sistema
 - Inicio de sesión con validación de correo y contraseña.
 - Registro de usuarios con validaciones: campos obligatorios, correo válido, contraseña de
   al menos 8 caracteres y correo no duplicado.
-- Recuperación de contraseña (pendiente de conectar el endpoint en Xano).
+- Recuperación de contraseña a través de `POST /auth/recuperar-contrasenia` en Xano.
 - Sesión persistente mediante token en `SharedPreferences`, validada con `GET /auth/me`.
 - Cierre de sesión con diálogo de confirmación.
 - Perfil editable (nombre, apellido y correo).
@@ -224,8 +224,8 @@ Para instalar directamente en un dispositivo conectado:
 
 > [!NOTE]
 > **Alcance académico.** El backend es una instancia de Xano. La sesión se restaura con el token
-> guardado y se confirma con `GET /auth/me`. La recuperación de contraseña queda pendiente de su
-> endpoint en Xano. No usar credenciales reales en producción.
+> guardado y se confirma con `GET /auth/me`. La recuperación de contraseña llama a Xano.
+> No usar credenciales reales en producción.
 
 - No hay SQLite: los racks y el historial viven en Xano y se mantienen en caché en memoria mientras la app está abierta.
 - Al cerrar la app se descarta la caché; al volver a abrirla se vuelven a descargar los datos.

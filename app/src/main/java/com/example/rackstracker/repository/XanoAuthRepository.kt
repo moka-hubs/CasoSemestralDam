@@ -2,6 +2,7 @@ package com.example.rackstracker.repository
 
 import com.example.rackstracker.data.remote.ApiService
 import com.example.rackstracker.data.remote.LoginRequest
+import com.example.rackstracker.data.remote.RecuperarContrasenaRequest
 import com.example.rackstracker.data.remote.RegistroRequest
 import com.example.rackstracker.data.remote.RetrofitInstance
 import com.example.rackstracker.data.remote.TokenStore
@@ -111,10 +112,17 @@ class XanoAuthRepository(
         if (!correo.contains("@")) {
             return Result.failure(IllegalArgumentException("Correo electrónico no válido"))
         }
-        // TODO: conectar el endpoint de recuperación que se cree en Xano.
-        return Result.failure(
-            IllegalStateException("La recuperación de contraseña aún no está disponible en el servidor.")
-        )
+        return try {
+            api.recuperarContrasena(RecuperarContrasenaRequest(correo.trim().lowercase()))
+            Result.success(Unit)
+        } catch (e: Exception) {
+            val mensaje = if (e is HttpException && e.code() == 401) {
+                "No se pudo enviar la solicitud. Inténtalo más tarde."
+            } else {
+                mensajeError(e)
+            }
+            Result.failure(Exception(mensaje, e))
+        }
     }
 
     private fun mensajeError(e: Exception): String = when (e) {
