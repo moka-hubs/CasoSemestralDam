@@ -19,6 +19,12 @@ interface RackRepository {
 
     /** Reemplaza por completo la caché local de racks. */
     suspend fun reemplazarRacks(racks: List<Racks>) = Unit
+
+    /** Sincroniza el historial de un rack desde Xano a la caché local. */
+    suspend fun refreshHistorial(rackId: Int): Result<Unit> = Result.success(Unit)
+
+    /** Reemplaza el historial local de un rack. */
+    suspend fun reemplazarHistorial(rackId: Int, eventos: List<RackHistorial>) = Unit
 }
 
 class RoomRackRepository(
@@ -44,5 +50,9 @@ class RoomRackRepository(
 
     override suspend fun reemplazarRacks(racks: List<Racks>) {
         dao.reemplazarRacks(racks)
+    }
+
+    override suspend fun reemplazarHistorial(rackId: Int, eventos: List<RackHistorial>) {
+        dao.reemplazarHistorial(rackId, eventos)
     }
 }

@@ -61,6 +61,15 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarHistorial(eventos: List<RackHistorial>)
 
+    @Transaction
+    suspend fun reemplazarHistorial(rackId: Int, eventos: List<RackHistorial>) {
+        borrarHistorialRack(rackId)
+        insertarHistorial(eventos)
+    }
+
+    @Query("DELETE FROM historial_racks WHERE rackId = :rackId")
+    suspend fun borrarHistorialRack(rackId: Int)
+
     // ----- Usuarios -----
 
     @Query("SELECT * FROM usuarios WHERE correo = :correo LIMIT 1")

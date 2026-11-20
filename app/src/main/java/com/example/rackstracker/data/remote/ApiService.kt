@@ -5,7 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface ApiService {
 
@@ -38,7 +37,9 @@ interface ApiService {
     ): RackDto
 
     // ----- Historial -----
+    // Xano ignora los query params en este endpoint: devuelve todos los eventos
+    // y el filtro por rack se aplica en el repositorio.
 
     @GET("historial_racks")
-    suspend fun historial(@Query("rack_id") rackId: Int): List<HistorialDto>
+    suspend fun historial(): List<HistorialDto>
 }

@@ -23,6 +23,17 @@ class XanoRackRepository(
         Result.failure(Exception(mensajeError(e), e))
     }
 
+    override suspend fun refreshHistorial(rackId: Int): Result<Unit> = try {
+        // Xano no filtra en el servidor: traemos todo y filtramos acá.
+        val eventos = api.historial()
+            .filter { it.rackId == rackId }
+            .map { it.aDominio() }
+        local.reemplazarHistorial(rackId, eventos)
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(Exception(mensajeError(e), e))
+    }
+
     private fun mensajeError(e: Exception): String = when (e) {
         is HttpException -> when (e.code()) {
             401 -> "Tu sesión expiró. Vuelve a iniciar sesión."
@@ -30,6 +41,6 @@ class XanoRackRepository(
             else -> "Error del servidor (${e.code()})."
         }
         is IOException -> "Sin conexión. Revisa tu red e inténtalo de nuevo."
-        else -> e.message ?: "No se pudieron cargar los racks."
+        else -> e.message ?: "No se pudieron cargar los datos."
     }
 }
