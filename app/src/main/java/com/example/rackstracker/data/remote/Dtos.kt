@@ -119,8 +119,8 @@ fun HistorialDto.aDominio(): RackHistorial = RackHistorial(
     rackId = rackId,
     tipo = tipoApi(tipo),
     descripcion = descripcion,
-    estadoAnterior = estadoAnterior?.let(::estadoApi),
-    estadoNuevo = estadoNuevo?.let(::estadoApi),
+    estadoAnterior = estadoAnterior?.takeIf { it.isNotBlank() }?.let(::estadoApi),
+    estadoNuevo = estadoNuevo?.takeIf { it.isNotBlank() }?.let(::estadoApi),
     usuarioCorreo = usuarioCorreo.orEmpty(),
     fecha = createdAt ?: 0L
 )
