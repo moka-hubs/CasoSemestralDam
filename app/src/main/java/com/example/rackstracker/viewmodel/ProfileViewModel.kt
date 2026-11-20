@@ -39,7 +39,8 @@ class ProfileViewModel(
         viewModelScope.launch {
             SessionManager.usuario.collect { usuario ->
                 _uiState.update { actual ->
-                    if (actual.editando) actual else buildState(usuario)
+                    if (actual.editando) actual
+                    else buildState(usuario).copy(guardado = actual.guardado, error = actual.error)
                 }
             }
         }
