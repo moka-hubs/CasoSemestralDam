@@ -42,4 +42,7 @@ interface ApiService {
 
     @GET("historial_racks")
     suspend fun historial(): List<HistorialDto>
+
+    @POST("historial_racks")
+    suspend fun crearHistorial(@Body body: HistorialCreateRequest): HistorialDto
 }

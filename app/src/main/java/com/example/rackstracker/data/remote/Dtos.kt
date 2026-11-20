@@ -96,6 +96,21 @@ data class RackCreateRequest(
     @SerializedName("imagen_url") val imagenUrl: String? = null
 )
 
+fun Racks.aRequest(): RackCreateRequest = RackCreateRequest(
+    nombre = nombre,
+    codigo = codigo,
+    sede = sede,
+    sala = sala,
+    posicion = posicion,
+    capacidadU = capacidadU,
+    ocupadasU = ocupadasU,
+    equipos = equipos,
+    estado = estado.name,
+    creadorPor = creadoPor.ifBlank { null },
+    notas = notas,
+    imagenUrl = imagenUri
+)
+
 data class EstadoRequest(
     val estado: String
 )
@@ -112,6 +127,16 @@ data class HistorialDto(
     @SerializedName("estado_nuevo") val estadoNuevo: String? = null,
     @SerializedName("usuario_correo") val usuarioCorreo: String? = null,
     @SerializedName("created_at") val createdAt: Long? = null
+)
+
+data class HistorialCreateRequest(
+    @SerializedName("rack_id") val rackId: Int,
+    @SerializedName("rack_codigo") val rackCodigo: Int,
+    val tipo: String,
+    val descripcion: String,
+    @SerializedName("estado_anterior") val estadoAnterior: String = "",
+    @SerializedName("estado_nuevo") val estadoNuevo: String = "",
+    @SerializedName("usuario_correo") val usuarioCorreo: String = ""
 )
 
 fun HistorialDto.aDominio(): RackHistorial = RackHistorial(

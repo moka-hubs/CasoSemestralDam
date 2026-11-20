@@ -142,6 +142,11 @@ fun RackDetailScreen(
                 }
             }
 
+            state.error?.let { mensaje ->
+                Spacer(Modifier.height(8.dp))
+                Text(text = mensaje, color = TextMuted, fontSize = 13.sp)
+            }
+
             Spacer(Modifier.height(20.dp))
             PrimaryButton(
                 text = "Guardar cambios",

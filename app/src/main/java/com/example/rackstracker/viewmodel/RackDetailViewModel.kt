@@ -18,7 +18,8 @@ data class RackDetailUiState(
     val rack: Racks? = null,
     val estadoSeleccionado: RackStatus = RackStatus.ACTIVO,
     val guardado: Boolean = false,
-    val puedeEditar: Boolean = false
+    val puedeEditar: Boolean = false,
+    val error: String? = null
 )
 
 class RackDetailViewModel(
@@ -71,19 +72,24 @@ class RackDetailViewModel(
         if (!s.puedeEditar) return
         viewModelScope.launch {
             repository.updateStatus(rack.id, s.estadoSeleccionado)
-            if (rack.estado != s.estadoSeleccionado) {
-                repository.addHistorial(
-                    RackHistorial(
-                        rackId = rack.id,
-                        tipo = TipoEventoRack.CAMBIO_ESTADO,
-                        descripcion = "Estado actualizado de ${rack.estado.label} a ${s.estadoSeleccionado.label}",
-                        estadoAnterior = rack.estado,
-                        estadoNuevo = s.estadoSeleccionado,
-                        usuarioCorreo = SessionManager.correoActual ?: ""
-                    )
-                )
-            }
-            _uiState.update { it.copy(guardado = true) }
+                .onSuccess {
+                    if (rack.estado != s.estadoSeleccionado) {
+                        repository.addHistorial(
+                            RackHistorial(
+                                rackId = rack.id,
+                                tipo = TipoEventoRack.CAMBIO_ESTADO,
+                                descripcion = "Estado actualizado de ${rack.estado.label} a ${s.estadoSeleccionado.label}",
+                                estadoAnterior = rack.estado,
+                                estadoNuevo = s.estadoSeleccionado,
+                                usuarioCorreo = SessionManager.correoActual ?: ""
+                            )
+                        )
+                    }
+                    _uiState.update { it.copy(guardado = true, error = null) }
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(error = e.message ?: "No se pudo actualizar el rack.") }
+                }
         }
     }
 }

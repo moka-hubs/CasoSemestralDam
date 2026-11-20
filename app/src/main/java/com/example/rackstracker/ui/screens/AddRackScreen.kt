@@ -302,6 +302,11 @@ fun AddRackScreen(
             Spacer(Modifier.height(8.dp))
             InfoNote("El rack se registrará sin equipos. Podrás añadirlos desde su ficha.")
 
+            state.error?.let { mensaje ->
+                Spacer(Modifier.height(8.dp))
+                Text(text = mensaje, color = TextMuted, fontSize = 13.sp)
+            }
+
             Spacer(Modifier.height(28.dp))
             PrimaryButton(
                 text = "Registrar rack",

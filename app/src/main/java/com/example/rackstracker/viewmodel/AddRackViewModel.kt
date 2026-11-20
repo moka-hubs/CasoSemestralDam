@@ -24,7 +24,8 @@ data class AddRackUiState(
     val estado: RackStatus = RackStatus.ACTIVO,
     val notas: String = "",
     val imagenUri: String? = null,
-    val guardado: Boolean = false
+    val guardado: Boolean = false,
+    val error: String? = null
 ) {
     val formularioValido: Boolean
         get() = nombre.isNotBlank() && codigo.isNotBlank() &&
@@ -60,34 +61,38 @@ class AddRackViewModel(
         val s = _uiState.value
         if (!s.formularioValido) return
         viewModelScope.launch {
-            val id = repository.addRack(
-                Racks(
-                    nombre = s.nombre.trim(),
-                    codigo = s.codigo.trim().uppercase(),
-                    sede = s.sede,
-                    sala = s.sala,
-                    posicion = s.posicion.trim(),
-                    capacidadU = s.capacidad.toIntOrNull() ?: 0,
-                    ocupadasU = 0,
-                    equipos = 0,
-                    estado = s.estado,
-                    creadoPor = SessionManager.correoActual ?: "",
-                    notas = s.notas.trim(),
-                    imagenUri = s.imagenUri
-                )
+            val rack = Racks(
+                nombre = s.nombre.trim(),
+                codigo = s.codigo.trim().uppercase(),
+                sede = s.sede,
+                sala = s.sala,
+                posicion = s.posicion.trim(),
+                capacidadU = s.capacidad.toIntOrNull() ?: 0,
+                ocupadasU = 0,
+                equipos = 0,
+                estado = s.estado,
+                creadoPor = SessionManager.correoActual ?: "",
+                notas = s.notas.trim(),
+                imagenUri = s.imagenUri
             )
-            if (id > 0) {
-                repository.addHistorial(
-                    RackHistorial(
-                        rackId = id.toInt(),
-                        tipo = TipoEventoRack.CREACION,
-                        descripcion = "Rack registrado en el sistema",
-                        estadoNuevo = s.estado,
-                        usuarioCorreo = SessionManager.correoActual ?: ""
-                    )
-                )
-            }
-            _uiState.update { it.copy(guardado = true) }
+            repository.addRack(rack)
+                .onSuccess { id ->
+                    if (id > 0) {
+                        repository.addHistorial(
+                            RackHistorial(
+                                rackId = id.toInt(),
+                                tipo = TipoEventoRack.CREACION,
+                                descripcion = "Rack registrado en el sistema",
+                                estadoNuevo = s.estado,
+                                usuarioCorreo = SessionManager.correoActual ?: ""
+                            )
+                        )
+                    }
+                    _uiState.update { it.copy(guardado = true, error = null) }
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(error = e.message ?: "No se pudo guardar el rack.") }
+                }
         }
     }
 
