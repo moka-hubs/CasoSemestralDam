@@ -216,7 +216,10 @@ Para instalar directamente en un dispositivo conectado:
 | Correo | Contraseña | Rol |
 | :--- | :--- | :--- |
 | `admin@racks.com` | `admin1234` | Administrador |
-| `ana@racks.com` | `ana12345` | Usuario |
+| `ana@racks.com` | `ana123` | Usuario |
+| `carlos@racks.com` | `carlos123` | Usuario |
+| `lucia@racks.com` | `lucia1234` | Usuario |
+| `diego@racks.com` | `diego1234` | Usuario |
 
 ---
 

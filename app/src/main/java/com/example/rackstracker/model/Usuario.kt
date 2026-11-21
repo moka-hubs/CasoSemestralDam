@@ -34,9 +34,9 @@ data class Usuario(
             Usuario(
                 nombre = "Ana",
                 apellido = "Torres",
-                rut = "15.678.912-3",
+                rut = "11.111.111-1",
                 correo = "ana@racks.com",
-                contrasena = "ana12345",
+                contrasena = "ana123",
                 rol = RolUsuario.USUARIO
             )
         )
