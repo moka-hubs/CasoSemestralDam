@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.rackstracker"
+    namespace = "com.duoc.rackstracker"
     compileSdk = 37
 
     defaultConfig {
