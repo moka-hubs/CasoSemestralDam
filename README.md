@@ -133,17 +133,18 @@ flujo de datos unidireccional y `StateFlow` como única fuente de verdad para la
 
 ```text
 CasoSemestralDam/
-├── app/src/main/java/com/example/rackstracker/
+├── app/src/main/java/com/duoc/rackstracker/
 │   ├── MainActivity.kt              # Punto de entrada e inyección de dependencias
 │   ├── components/                  # Botones, campos, chips y barras reutilizables
 │   ├── data/remote/                 # ApiService, DTOs, RetrofitInstance, TokenStore, interceptor
 │   ├── model/                       # Racks, RackStatus, Usuario, RolUsuario
-│   ├── navigation/                  # Navegación y definición de rutas
 │   ├── repository/                  # Repositorios Xano + caché en memoria
-│   ├── screens/                     # Login, Registro, Recuperación, Racks, Detalle, Agregar, Perfil
 │   ├── session/                     # SessionManager
-│   ├── ui/theme/                    # Colores, tipografía y tema
+│   ├── ui/
+│   │   ├── screens/                 # Login, Registro, Recuperación, Racks, Detalle, Agregar, Perfil
+│   │   └── theme/                   # Colores, tipografía y tema
 │   └── viewmodel/                   # Un ViewModel por pantalla
+│       └── navigation/              # NavHost, rutas y grafo de navegación
 ├── docs/                            # Diagramas SVG de arquitectura y navegación
 ├── gradle/libs.versions.toml        # Catálogo de dependencias y versiones
 ├── build.gradle.kts

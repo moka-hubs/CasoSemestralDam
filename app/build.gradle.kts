@@ -8,7 +8,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.rackstracker"
+        applicationId = "com.duoc.rackstracker"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
